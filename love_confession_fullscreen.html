@@ -1,0 +1,260 @@
+
+<style>
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  @keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+  @keyframes pop { 0%{transform:scale(1)} 30%{transform:scale(1.35)} 70%{transform:scale(0.92)} 100%{transform:scale(1)} }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+  @keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+  @keyframes slideUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  #app {
+    width: 100%;
+    min-height: 100vh;
+    background: #fff5f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  }
+
+  .petal {
+    position: fixed;
+    pointer-events: none;
+    animation: fall linear forwards;
+    z-index: 999;
+    font-size: 22px;
+  }
+
+  .star {
+    position: absolute;
+    color: #f4c0d1;
+    font-size: 20px;
+    animation: pulse 2.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2.5rem 2rem;
+    animation: slideUp 0.7s ease forwards;
+    max-width: 420px;
+    width: 100%;
+  }
+  .screen.active { display: flex; }
+
+  .big-heart {
+    font-size: 90px;
+    line-height: 1;
+    margin-bottom: 1.5rem;
+    animation: float 3s ease-in-out infinite;
+    display: block;
+  }
+  .big-heart.beat { animation: heartbeat 0.7s ease infinite; }
+
+  .title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #993556;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+
+  .subtitle {
+    font-size: 20px;
+    color: #c46080;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+  }
+
+  .btn-main {
+    width: 100%;
+    max-width: 280px;
+    padding: 18px 0;
+    border-radius: 999px;
+    border: none;
+    background: #ED93B1;
+    color: white;
+    font-size: 22px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: transform 0.15s, background 0.2s;
+  }
+  .btn-main:active { transform: scale(0.97); }
+  .btn-main:hover { background: #D4537E; }
+
+  .btn-no {
+    padding: 14px 36px;
+    border-radius: 999px;
+    border: 1.5px solid #f4c0d1;
+    background: white;
+    color: #c46080;
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .btn-no:active { transform: scale(0.97); }
+
+  .hint {
+    font-size: 15px;
+    color: #e8a0b8;
+    margin-top: 1rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .code-box {
+    background: #fff0f5;
+    border: 1.5px solid #f4c0d1;
+    border-radius: 16px;
+    padding: 1.2rem 1.5rem;
+    font-family: monospace;
+    font-size: 17px;
+    color: #D4537E;
+    text-align: left;
+    line-height: 2;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .close-area {
+    margin-top: 1rem;
+  }
+
+  .btn-close {
+    padding: 12px 40px;
+    border-radius: 999px;
+    border: 1.5px solid #ccc;
+    background: white;
+    color: #999;
+    font-size: 17px;
+    cursor: pointer;
+  }
+
+  .progress {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: #fde0ea;
+    z-index: 100;
+  }
+  .progress-bar {
+    height: 100%;
+    background: #ED93B1;
+    transition: width 0.5s ease;
+    border-radius: 2px;
+  }
+</style>
+
+<div id="app">
+  <div class="progress"><div class="progress-bar" id="prog" style="width:0%"></div></div>
+
+  <div class="star" style="top:6%;left:6%;animation-delay:0s">✦</div>
+  <div class="star" style="top:10%;right:8%;animation-delay:0.8s">✦</div>
+  <div class="star" style="bottom:15%;left:10%;animation-delay:1.4s">✦</div>
+  <div class="star" style="bottom:8%;right:7%;animation-delay:0.4s">✦</div>
+  <div class="star" style="top:40%;left:3%;animation-delay:1s">✦</div>
+  <div class="star" style="top:55%;right:4%;animation-delay:0.2s">✦</div>
+
+  <!-- 第1屏：开场 -->
+  <div class="screen active" id="s1">
+    <span class="big-heart">🌸</span>
+    <p class="title">有句话想对你说</p>
+    <p class="subtitle">鼓起了很大的勇气<br>希望你能认真看完 ♡</p>
+    <button class="btn-main" onclick="go(2)">我准备好了 →</button>
+    <p class="hint">请看完再关闭哦～</p>
+  </div>
+
+  <!-- 第2屏：表白 -->
+  <div class="screen" id="s2">
+    <span class="big-heart" id="heart2">💗</span>
+    <p class="title">你愿意和我<br>在一起吗？</p>
+    <p class="subtitle">认识你以来<br>每一天都变得不一样了<br>我想和你一起，慢慢走下去</p>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%">
+      <button class="btn-main" id="yesBtn" onclick="handleYes()">愿意 ♡</button>
+      <button class="btn-no" id="noBtn" onclick="handleNo()">再想想…</button>
+    </div>
+  </div>
+
+  <!-- 第3屏：成功 -->
+  <div class="screen" id="s3">
+    <span class="big-heart beat">❤️</span>
+    <p class="title">太好啦！！</p>
+    <p class="subtitle">从今天起<br>你就是我的人了<br>我会好好珍惜你 ✨</p>
+    <div class="code-box">if (你愿意):
+    我们 = 在一起()
+    print("❤️ 在一起啦！")</div>
+    <button class="btn-main" onclick="go(4)" style="background:#f4a0c0">继续 →</button>
+  </div>
+
+  <!-- 第4屏：结尾 + 关闭按钮 -->
+  <div class="screen" id="s4">
+    <span class="big-heart beat">💑</span>
+    <p class="title">谢谢你愿意<br>接受我的表白</p>
+    <p class="subtitle">以后的每一天<br>我都想陪着你 🌈<br><br>—— 你最喜欢的那个人</p>
+    <div class="close-area">
+      <p style="font-size:15px;color:#e8a0b8;margin-bottom:12px;">已经看完啦，可以关闭了～</p>
+      <button class="btn-close" onclick="alert('记得回复我哦 ♡')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let noCount = 0;
+  const noTexts = ["再想想…","真的不要？","再考虑一下嘛","求你了！","就这一次机会","好吧…（哭）"];
+  const yesTexts = ["愿意 ♡","愿意！♡","当然愿意啦 ♡"];
+  const progs = {1:0, 2:33, 3:66, 4:100};
+
+  function go(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('s'+n).classList.add('active');
+    document.getElementById('prog').style.width = progs[n] + '%';
+    if(n===3) spawnPetals();
+  }
+
+  function handleNo() {
+    noCount++;
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    noBtn.textContent = noTexts[Math.min(noCount, noTexts.length-1)];
+    noBtn.style.animation = 'shake 0.4s ease';
+    setTimeout(()=> noBtn.style.animation='', 400);
+    const size = Math.min(22 + noCount*3, 34);
+    yesBtn.style.fontSize = size+'px';
+    yesBtn.textContent = yesTexts[Math.min(noCount-1, yesTexts.length-1)] || '愿意 ♡';
+    yesBtn.style.animation = 'pop 0.4s ease';
+    setTimeout(()=> yesBtn.style.animation='', 400);
+    if(noCount >= 5) noBtn.style.display='none';
+  }
+
+  function handleYes() {
+    go(3);
+  }
+
+  function spawnPetals() {
+    const p = ['🌸','💕','✨','🌷','💗','🌹','💖'];
+    for(let i=0;i<30;i++){
+      setTimeout(()=>{
+        const el = document.createElement('div');
+        el.className = 'petal';
+        el.textContent = p[Math.floor(Math.random()*p.length)];
+        el.style.left = Math.random()*100+'vw';
+        el.style.top = '-30px';
+        el.style.animationDuration = (2.5+Math.random()*3)+'s';
+        el.style.fontSize = (16+Math.random()*16)+'px';
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(), 6000);
+      }, i*100);
+    }
+  }
+</script>
